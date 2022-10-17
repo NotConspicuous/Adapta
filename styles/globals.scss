@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+//define variables
+$swatch-primary-500: #8121ff;
+$swatch-page-background: #fff;
+$columns: 12;
+
+
+@function tetrad($color) {
+  $hue: hue($color);
+  $saturation: saturation($color);
+  $lightness: lightness($color);
+  $tetrad: [ hsl($hue, $saturation, $lightness),
+    hsl($hue + 90 % 360, $saturation, $lightness),
+    hsl($hue + 180 % 360, $saturation, $lightness),
+    hsl($hue + 270 % 360, $saturation, $lightness) ];
+  @return $tetrad;
+}
+
+@function multiply ($fore, $back) {
+  $red: red($back) * red($fore) / 255;
+  $green: green($back) * green($fore) / 255;
+  $blue: blue($back) * blue($fore) / 255;
+  @return rgb($red, $green, $blue);
+}
+@function makeColorPalette($color) {
+  $light: #fff;
+  $dark: multiply($color, $color);
+  $tetrad: tetrad($color);
+  $palette: (
+    50: mix($light, $color, 88%),
+    100: mix($light, $color, 70%),
+    200: mix($light, $color, 50%),
+    300: mix($light, $color, 30%),
+    400: mix($light, $color, 15%),
+    500: mix($light, $color, 0%),
+    600: mix($dark, $color, 13%),
+    700: mix($dark, $color, 30%),
+    800: mix($dark, $color, 46%),
+    900: mix($dark, $color, 75%),
+    A100: lighten(saturate(mix($dark, $color, 15%), 80%), 45.6%),
+    A200: lighten(saturate(mix($dark, $color, 15%), 80%), 35.6%),
+    A400: lighten(saturate(mix($dark, $color, 15%), 100%), 25.6%),
+    A700: lighten(saturate(mix($dark, $color, 15%), 100%), 20.5%)
+  );
+  @return $palette;
+}
+
+$palette: makeColorPalette($swatch-primary-500);
+
+
+* {
+  font-family: 'Work Sans';
+  font-size: 14pt;
+  cursor: none;
+}
+
+@for $i from 1 through 9 {
+	$shadow: ($i+3);
+	.dp_l#{$i} { 
+		box-shadow: 0px 2px #{$shadow}px -2px #0005;
+	}
+}
+
+@for $i from 1 through 7 {
+	$size: (40-($i*3))/4;
+	h#{$i} { 
+		font-size: #{$size}vw;
+		font-weight: #{$size*100}
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+  * {
+    color: #eee
+  }
+  
+  html, body {
+    background: #131313;
+    color: #eee
+  }
+}
+
+@mixin button_events {
+  & {
+    // opacity: 0.75;
+    transition: all 0.2s;
+  }
+  &:hover {
+    background: map-get($palette, 500) radial-gradient(circle, transparent 1%, #ffffff22 1%) center/15000%;
+  }
+  &:active {
+    background-size: 100%;
+    transition: all 0s;
+  }
+}
+
+button {
+  @include button_events();
+  box-sizing: border-box;
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+
+  background: #fff1;
+  border: 1px #fff0;
+  box-shadow: 0px 0px 1px #fff2;
+  border-radius: 4px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14pt;
+}
+
+button.primary {
+  @include button_events();
+  box-sizing: border-box;
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+
+  background: map-get($palette, 500);
+  border: 1px solid map-get($palette, 300);
+  box-shadow: 0px 0px 1px map-get($palette, 400);
+  border-radius: 4px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14pt;
+}
+
+button:focus {
+  outline-style: solid;
+  outline-color: map-get($palette, 500);
+  outline-width: thin;
+  outline-offset: 2px;
+}
+
+input.checkbox[type="checkbox"]:not(:checked),
+input.checkbox[type="checkbox"]:checked
+{
+  position: relative;
+	opacity: 0;
+}
+
+input.checkbox[type="checkbox"]:not(:checked) + label,
+input.checkbox[type="checkbox"]:checked + label {
+	cursor: pointer;
+	vertical-align: top;
+	user-select: none;
+}
+
+input.checkbox[type="checkbox"] + label>svg  {
+	border-radius: 7px;
+	padding: 3px;
+}
+
+input.checkbox[type="checkbox"]:not(:checked) + label>svg  {
+	background: transparent;
+	cursor: pointer;
+	opacity: 0.5;
+}
+input.checkbox[type="checkbox"]:checked + label>svg {
+	background: $swatch-primary-500;
+	stroke: set-color($swatch-primary-500);
+	cursor: pointer;
+}
+
+input.checkbox[type="checkbox"] + label>a {
+	position: relative;
+	bottom: 8px;
+}
+
+// on light mode
+div.cursor {
+  position: fixed;
+  background: rgba(180, 180, 180, 0.4);
+  box-shadow: inset 0px 0px 0px 1px rgba(180, 180, 180);
+  border-radius:50%;
+  height: 32px;
+  width: 32px;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  pointer-events: none;
+  transition: opacity 0.1s ease-in;
+  // change to white using difference on black background
+  mix-blend-mode:  luminosity;
+  
+}
+
